@@ -1,0 +1,4 @@
+UserParameter=rabbitmq.discovery_queues,{{zabbix_scripts_path}}/list_rabbit_queues.sh
+UserParameter=rabbitmq.discovery_shovels,{{zabbix_scripts_path}}/list_rabbit_shovels.sh
+UserParameter=rabbitmq.discovery_nodes,{{zabbix_scripts_path}}/list_rabbit_nodes.sh
+UserParameter=rabbitmq[*],{{zabbix_scripts_path}}/rabbitmq-status.sh $1 $2 $3

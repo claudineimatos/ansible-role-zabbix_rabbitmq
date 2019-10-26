@@ -1,0 +1,18 @@
+galaxy_info:
+  author: Claudinei Matos
+  description: A role to install and configure RabbitMQ monitoring on Zabbix.
+  license: BSD
+
+  min_ansible_version: 2.4
+
+  platforms:
+    - name: RedHat
+      versions:
+      - 6
+      - 7
+
+  galaxy_tags:
+    - zabbix
+    - rabbitmq
+
+dependencies: []

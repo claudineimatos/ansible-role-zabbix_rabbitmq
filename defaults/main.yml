@@ -1,0 +1,30 @@
+---
+# defaults file for ansible-roles-zabbix_rabbitmq
+zabbix_install_sender: true
+
+zabbix_rabbit_hostname: localhost
+rabbit_config_file: /etc/rabbitmq/rabbitmq.conf
+
+zabbix_rabbit_log_file: /var/log/zabbix/rabbitmq_zabbix.log
+zabbix_rabbit_log_level: INFO
+
+zabbix_rabbit_monitoring_filter: '{"durable": true}'
+zabbix_rabbit_monitoring_port: 15672
+zabbix_rabbit_manage_monitoring_user: true
+zabbix_rabbit_monitoring_user: 
+  login: zabbix
+  password: zabbix
+  tags: monitoring
+  localhost_only: true
+  permissions:
+    - vhost: /
+      configure_priv: .*
+      read_priv: .*
+      write_priv: .* 
+
+zabbix_rabbit_restart_service: false
+
+zabbix_scripts_path: /usr/local/zabbix/rabbitmq
+zabbix_userparameter_path: "{{agent_include|default('/etc/zabbix/zabbix_agentd.d')}}"
+zabbix_config_dir: "/etc/zabbix" 
+zabbix_config_file: "{{zabbix_agent_conf|default('zabbix_agentd.conf')}}"

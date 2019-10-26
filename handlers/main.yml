@@ -1,0 +1,10 @@
+---
+# handlers file for ansible-roles-zabbix_rabbitmq
+- name: start / restart zabbix
+  service: name=zabbix-agent state=restarted enabled=yes
+  tags: [services, zabbix]
+
+- name: start / restart rabbitmq
+  service: name=rabbitmq-server state=restarted enabled=yes
+  when: zabbix_rabbit_restart_service
+  tags: [services, rabbitmq]

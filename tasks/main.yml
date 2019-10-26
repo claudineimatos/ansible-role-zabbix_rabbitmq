@@ -1,0 +1,54 @@
+---
+- name: install zabbix sender
+  package: name=zabbix-sender state=present
+  when: zabbix_install_sender
+  tags: [packages, zabbix]
+
+- name: check if zabbix plugin directory exists
+  stat: path={{zabbix_scripts_path}}
+  register: zabbix_dir
+  tags: [files, zabbix_plugin]
+
+- name: create zabbix directory
+  file: path={{zabbix_scripts_path}} state=directory
+  when: zabbix_dir.isdir is not defined
+  tags: [files, zabbix_plugin]
+
+- name: copy zabbix plugin scripts files
+  copy: src={{ item }} dest={{zabbix_scripts_path}}/ owner=zabbix group=zabbix mode=550
+  with_fileglob:
+    - script/*.py
+    - script/*.sh
+  tags: [files, zabbix_plugin]
+
+- name: copy rab.auth 
+  template: src=rab.auth.j2 dest={{zabbix_scripts_path}}/.rab.auth owner=zabbix group=zabbix mode=440
+  tags: [files, zabbix_plugin]
+
+- name: copy zabbix plugin include file
+  template: src=zabbix-rabbitmq.conf.j2 dest={{zabbix_userparameter_path}}/zabbix-rabbitmq.conf
+  notify: start / restart zabbix
+  tags: [files, zabbix_plugin]
+
+- block:
+  - name: delete zabbix user on rabbitmq (if exists)
+    rabbitmq_user:
+      user: "{{zabbix_rabbit_monitoring_user.login}}"
+      password: "{{zabbix_rabbit_monitoring_user.password}}"
+      state: absent
+  
+  - name: (re)create zabbix user on rabbitmq
+    rabbitmq_user:
+      user: "{{zabbix_rabbit_monitoring_user.login}}"
+      password: "{{zabbix_rabbit_monitoring_user.password}}"
+      permissions: "{{zabbix_rabbit_monitoring_user.permissions}}"
+      tags: "{{zabbix_rabbit_monitoring_user.tags}}"
+      state: present
+  
+  - name: permit zabbix user only from localhost
+    lineinfile:
+      path: "{{rabbit_config_file}}"
+      line: "loopback_users.{{zabbix_rabbit_monitoring_user.login}} = true"
+    when: zabbix_rabbit_monitoring_user.localhost_only
+    notify: start / restart rabbitmq
+  when: zabbix_rabbit_manage_monitoring_user
