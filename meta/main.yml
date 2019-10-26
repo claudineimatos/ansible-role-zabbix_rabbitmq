@@ -1,4 +1,5 @@
 galaxy_info:
+  role_name: zabbix_rabbitmq
   author: Claudinei Matos
   description: A role to install and configure RabbitMQ monitoring on Zabbix.
   license: BSD
